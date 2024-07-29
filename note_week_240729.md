@@ -2,7 +2,7 @@
 - 找 `arch/x86/coco/tdx/` `arch/x86/virt/vmx/tdx/`  中 TDX 对应的接口。目前 Linux 内这部分代码很少，不需要修改这块，只需要保证最后 shm 的接口跟这边形式差不多就行。
 - `tools/testing/selftests/kvm/x86_64` 是 Linux 自带的测试，参考这个来手敲 vmcall
 - 从 Linux 调 vmcall 到 qemu：
-- - qemu 可以收到 hypercall，但是 qemu 无法从对应地址上拿到东西，qemu 处理后得到的 `append_memory->addr` 也是 0。可能是 hva<->gpa 这段有问题。
+- - qemu 可以收到 hypercall，但是 qemu 无法从对应地址上拿到东西，可能是 hva<->gpa 这段有问题。
 - 从用户到 Linux：
 - - 第一个想法是用户程序通过 `/dev/kvm` 打开 kvm，然后我直接在 kvm_dev_ioctl 或者 kvm_vm_ioctl 里加新操作就好了，但实际发现 Guest 端并不能开 kvm（这些 Trusted VM 都没有嵌套虚拟化），放弃
 - - 之后的想法是写成一个新设备放进 `/dev` 然后在启动时 `misc_register()` 它，但是似乎太复杂。也尝试直接修改 `/dev/shm`，但是 ipc 相关的设备也比较麻烦，或许可以做但耗时
